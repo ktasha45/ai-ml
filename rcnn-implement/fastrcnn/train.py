@@ -43,11 +43,10 @@ train_loss = tf.keras.metrics.Mean(name="train_loss")
 precision = tf.keras.metrics.Precision(name="precision")
 recall = tf.keras.metrics.Recall(name="recall")
 
-
 def train_step(image, target_object, gtb, rois):
     # mini_target_object (64, 5) / mini_gtb (64,4)
     mini_rois, mini_target_object, mini_gtb, positive_num = get_minibatch(rois[0,...],gtb[0,...], target_object[0,...])
-    with tf.GradientTape() as tape:    
+    with tf.GradientTape() as tape:
         predict_object, predict_box = fastrcnn(image, mini_rois) # (1, 64, 5) (1, 64, 4)
         losses = multi_task_loss(predict_object, predict_box, mini_target_object, mini_gtb, positive_num)
     gradients = tape.gradient(losses, fastrcnn.trainable_weights)
